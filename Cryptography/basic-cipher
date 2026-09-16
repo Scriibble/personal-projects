@@ -1,0 +1,97 @@
+// This was my final project in my intro to Computer Principles course at Highland.
+// I chose this as my final project because I knew it would be challenging to me.
+// I struggled with the undersatnding file I/O, but I managed to piece this together.
+// One issue I wasn't able to solve was when you encrypt a file, copy the contents of
+// The output file to a new file, and then try and decrypt the new input file, it 
+// Creates a blank txt file. I think something is causing it to stop the conversion 
+// numbers and then just outputs a blank file.
+
+
+
+#include <fstream>
+#include <iostream>
+#include <limits>
+#include <string>
+
+using namespace std;
+
+int main() {
+    char choice;
+    int key;
+    string inputFileName;
+    string outputFileName;
+
+    cout << "Would you like to encrypt or decrypt? (e/d): ";
+    cin >> choice;
+
+    if (choice != 'e' && choice != 'E' && choice != 'd' && choice != 'D') {
+        cout << "Invalid choice. Enter e for encrypt or d for decrypt.\n";
+        return 1;
+    }
+
+    cout << "Enter the key (a number): ";
+    cin >> key;
+
+    if (cin.fail()) {
+        cout << "Invalid key. The key must be a number.\n";
+        return 1;
+    }
+
+    // Clear the newline left in the input stream before reading file names.
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    cout << "Enter the input file name or path: ";
+    getline(cin, inputFileName);
+
+    cout << "Enter the output file name or path: ";
+    getline(cin, outputFileName);
+
+    if (inputFileName == outputFileName) {
+        cout << "The input and output files must be different.\n";
+        return 1;
+    }
+
+    ifstream inputFile(inputFileName, ios::binary);
+    if (!inputFile) {
+        cout << "Could not open the input file.\n";
+        return 1;
+    }
+
+    ofstream outputFile(outputFileName, ios::binary);
+    if (!outputFile) {
+        cout << "Could not open the output file.\n";
+        return 1;
+    }
+
+    // Reduce the key so very large keys still work correctly.
+    key %= 256;
+
+    if (choice == 'e' || choice == 'E') {
+        char character;
+
+        while (inputFile.get(character)) {
+            // Convert each character to its numeric ASCII/byte value.
+            int asciiValue = static_cast<unsigned char>(character);
+            asciiValue += key;
+
+            // Keep the encrypted value in the range of a byte.
+            asciiValue = (asciiValue % 256 + 256) % 256;
+
+            // Write the number so the encrypted file remains readable.
+            outputFile << asciiValue << ' ';
+        }
+    } else {
+        int asciiValue;
+
+        while (inputFile >> asciiValue) {
+            asciiValue -= key;
+
+            // Keep the decrypted value in the range of a byte.
+            asciiValue = (asciiValue % 256 + 256) % 256;
+            outputFile.put(static_cast<char>(asciiValue));
+        }
+    }
+
+    cout << "Done. The output was saved to " << outputFileName << ".\n";
+    return 0;
+}
