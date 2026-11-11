@@ -9,7 +9,7 @@
 
 import sys #to quit the program with sys.exit()
 
-_line = "+-" * 30
+_line = "--" * 30
 
 
 def valid_menu_selection(selection):
@@ -39,7 +39,7 @@ def menu():
     print(_line)
     return input("Enter your choice: ")
 
-def _encrypt():
+def encrypt():
     while True:
         print("Enter the text using A-Z that you wish to encrypt.")
         text = input().upper()
@@ -58,7 +58,7 @@ def _encrypt():
     encrypted_text = ceaser_cipher(text, shift)
     print("Encrypted message:", encrypted_text)
 
-def _decrypt():
+def decrypt():
     while True:
         print("Enter the text using A-Z that you wish to decrypt.")
         text = input().upper()
@@ -100,9 +100,9 @@ def main():
         selection = menu()
 
     if selection == "1":
-        _encrypt()
+        encrypt()
     elif selection == "2":
-        _decrypt()
+        decrypt()
 
     return 0
     
